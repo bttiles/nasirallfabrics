@@ -37,8 +37,8 @@ export const useProducts = (options: UseProductsOptions = {}) => {
         if (options.limit) params.append('limit', options.limit.toString());
         if (options.page) params.append('page', options.page.toString());
 
-        const response = await fetch(`/api/products?${params.toString()}`);
-        const data: ProductsResponse = await response.json();
+        const response = await fetch(`/api/products?${params.toString()}`, { cache: 'no-store', next: { revalidate: 0 } });
+        const data: ProductsResponse = await response.clone().json();
 
         const hashId = (s: string) => {
           let h = 0;
@@ -50,7 +50,7 @@ export const useProducts = (options: UseProductsOptions = {}) => {
           const mapped = (data.data as any[]).map((p) => {
             const thumbs = Array.isArray(p.imgs?.thumbnails) ? p.imgs.thumbnails : [];
             const prevs = Array.isArray(p.imgs?.previews) ? p.imgs.previews : [];
-            const fallback = '/images/products/product-1-bg-1.png';
+            const fallback = '/images/404.svg';
             return {
               id: p._id ? hashId(String(p._id)) : hashId(p.title + String(p.price)),
               title: p.title,
@@ -95,8 +95,8 @@ export const useProduct = (id: string) => {
         setLoading(true);
         setError(null);
 
-        const response = await fetch(`/api/products/${id}`);
-        const data = await response.json();
+        const response = await fetch(`/api/products/${id}`, { cache: 'no-store', next: { revalidate: 0 } });
+        const data = await response.clone().json();
 
         const hashId = (s: string) => {
           let h = 0;
@@ -108,7 +108,7 @@ export const useProduct = (id: string) => {
           const p = data.data;
           const thumbs = Array.isArray(p.imgs?.thumbnails) ? p.imgs.thumbnails : [];
           const prevs = Array.isArray(p.imgs?.previews) ? p.imgs.previews : [];
-          const fallback = '/images/products/product-1-bg-1.png';
+          const fallback = '/images/404.svg';
           const mapped = {
             id: p._id ? hashId(String(p._id)) : hashId(p.title + String(p.price)),
             title: p.title,
