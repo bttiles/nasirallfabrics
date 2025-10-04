@@ -46,6 +46,15 @@ const AdminPage = () => {
 };
 
 const ProductManagement = () => {
+  type ProductDoc = {
+    _id: string;
+    title: string;
+    price: number;
+    discountedPrice: number;
+    reviews?: number;
+    imgs?: { thumbnails: string[]; previews: string[] };
+  };
+
   const [formData, setFormData] = useState({
     title: '',
     price: '',
@@ -58,6 +67,23 @@ const ProductManagement = () => {
     thumbnails: ['', ''],
     previews: ['', ''],
   });
+  const [products, setProducts] = useState<ProductDoc[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const loadProducts = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch('/api/products?limit=100');
+      const data = await res.json();
+      if (data.success) setProducts(data.data);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadProducts();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,15 +94,22 @@ const ProductManagement = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          ...formData,
+          title: formData.title,
           price: parseFloat(formData.price),
           discountedPrice: parseFloat(formData.discountedPrice),
           reviews: parseInt(formData.reviews),
+          description: formData.description,
+          category: formData.category,
+          brand: formData.brand,
+          inStock: formData.inStock,
+          imgs: {
+            thumbnails: formData.thumbnails.filter(Boolean),
+            previews: formData.previews.filter(Boolean),
+          },
         }),
       });
 
       if (response.ok) {
-        alert('Product added successfully!');
         setFormData({
           title: '',
           price: '',
@@ -89,12 +122,24 @@ const ProductManagement = () => {
           thumbnails: ['', ''],
           previews: ['', ''],
         });
+        await loadProducts();
+        alert('Product added successfully!');
       } else {
         alert('Error adding product');
       }
     } catch (error) {
       console.error('Error:', error);
       alert('Error adding product');
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Delete this product?')) return;
+    const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
+    if (res.ok) {
+      setProducts((prev) => prev.filter((p) => p._id !== id));
+    } else {
+      alert('Failed to delete');
     }
   };
 
