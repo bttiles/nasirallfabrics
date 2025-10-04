@@ -37,11 +37,33 @@ export const useProducts = (options: UseProductsOptions = {}) => {
         if (options.limit) params.append('limit', options.limit.toString());
         if (options.page) params.append('page', options.page.toString());
 
-        const response = await fetch(`/api/products?${params.toString()}`);
-        const data: ProductsResponse = await response.json();
+        const response = await fetch(`/api/products?${params.toString()}`, { cache: 'no-store', next: { revalidate: 0 } });
+        const data: ProductsResponse = await response.clone().json();
+
+        const hashId = (s: string) => {
+          let h = 0;
+          for (let i = 0; i < s.length; i++) h = (h << 5) - h + s.charCodeAt(i);
+          return Math.abs(h);
+        };
 
         if (data.success) {
-          setProducts(data.data);
+          const mapped = (data.data as any[]).map((p) => {
+            const thumbs = Array.isArray(p.imgs?.thumbnails) ? p.imgs.thumbnails : [];
+            const prevs = Array.isArray(p.imgs?.previews) ? p.imgs.previews : [];
+            const fallback = '/images/404.svg';
+            return {
+              id: p._id ? hashId(String(p._id)) : hashId(p.title + String(p.price)),
+              title: p.title,
+              reviews: typeof p.reviews === 'number' ? p.reviews : 0,
+              price: p.price,
+              discountedPrice: p.discountedPrice,
+              imgs: {
+                thumbnails: thumbs.length ? thumbs : [fallback],
+                previews: prevs.length ? prevs : [fallback],
+              },
+            };
+          });
+          setProducts(mapped as any);
           setPagination(data.pagination || null);
         } else {
           setError(data.error || 'Failed to fetch products');
@@ -73,11 +95,32 @@ export const useProduct = (id: string) => {
         setLoading(true);
         setError(null);
 
-        const response = await fetch(`/api/products/${id}`);
-        const data = await response.json();
+        const response = await fetch(`/api/products/${id}`, { cache: 'no-store', next: { revalidate: 0 } });
+        const data = await response.clone().json();
+
+        const hashId = (s: string) => {
+          let h = 0;
+          for (let i = 0; i < s.length; i++) h = (h << 5) - h + s.charCodeAt(i);
+          return Math.abs(h);
+        };
 
         if (data.success) {
-          setProduct(data.data);
+          const p = data.data;
+          const thumbs = Array.isArray(p.imgs?.thumbnails) ? p.imgs.thumbnails : [];
+          const prevs = Array.isArray(p.imgs?.previews) ? p.imgs.previews : [];
+          const fallback = '/images/404.svg';
+          const mapped = {
+            id: p._id ? hashId(String(p._id)) : hashId(p.title + String(p.price)),
+            title: p.title,
+            reviews: typeof p.reviews === 'number' ? p.reviews : 0,
+            price: p.price,
+            discountedPrice: p.discountedPrice,
+            imgs: {
+              thumbnails: thumbs.length ? thumbs : [fallback],
+              previews: prevs.length ? prevs : [fallback],
+            },
+          } as any;
+          setProduct(mapped);
         } else {
           setError(data.error || 'Failed to fetch product');
         }

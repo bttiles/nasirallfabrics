@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import Product from '@/models/Product';
 
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 // GET /api/products - Fetch all products
 export async function GET(request: NextRequest) {
   try {
@@ -53,7 +57,17 @@ export async function POST(request: NextRequest) {
     await connectDB();
     
     const body = await request.json();
-    const product = new Product(body);
+    const payload = {
+      ...body,
+      imgs: body.imgs ?? {
+        thumbnails: Array.isArray(body.thumbnails) ? body.thumbnails : [],
+        previews: Array.isArray(body.previews) ? body.previews : [],
+      },
+    } as any;
+    delete payload.thumbnails;
+    delete payload.previews;
+
+    const product = new Product(payload);
     await product.save();
     
     return NextResponse.json({
