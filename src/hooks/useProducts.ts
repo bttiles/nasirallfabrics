@@ -93,8 +93,26 @@ export const useProduct = (id: string) => {
         const response = await fetch(`/api/products/${id}`);
         const data = await response.json();
 
+        const hashId = (s: string) => {
+          let h = 0;
+          for (let i = 0; i < s.length; i++) h = (h << 5) - h + s.charCodeAt(i);
+          return Math.abs(h);
+        };
+
         if (data.success) {
-          setProduct(data.data);
+          const p = data.data;
+          const mapped = {
+            id: p._id ? hashId(String(p._id)) : hashId(p.title + String(p.price)),
+            title: p.title,
+            reviews: typeof p.reviews === 'number' ? p.reviews : 0,
+            price: p.price,
+            discountedPrice: p.discountedPrice,
+            imgs: {
+              thumbnails: p.imgs?.thumbnails || [],
+              previews: p.imgs?.previews || [],
+            },
+          } as any;
+          setProduct(mapped);
         } else {
           setError(data.error || 'Failed to fetch product');
         }
