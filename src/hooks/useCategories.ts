@@ -22,8 +22,19 @@ export const useCategories = () => {
         const response = await fetch('/api/categories');
         const data: CategoriesResponse = await response.json();
 
+        const hashId = (s: string) => {
+          let h = 0;
+          for (let i = 0; i < s.length; i++) h = (h << 5) - h + s.charCodeAt(i);
+          return Math.abs(h);
+        };
+
         if (data.success) {
-          setCategories(data.data);
+          const mapped = (data.data as any[]).map((c) => ({
+            id: c._id ? hashId(String(c._id)) : hashId(c.title),
+            title: c.title,
+            img: c.img,
+          }));
+          setCategories(mapped as any);
         } else {
           setError(data.error || 'Failed to fetch categories');
         }
