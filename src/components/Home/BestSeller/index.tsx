@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import SingleItem from "./SingleItem";
 import Image from "next/image";

@@ -1,22 +1,22 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://syedmuhibfarooq_db_user:wgxmUoiudHu0HpUN@cluster0.xsrz42d.mongodb.net/nextmerce?retryWrites=true&w=majority&appName=Cluster0';
+const MONGODB_URI = process.env.MONGODB_URI as string;
+
+if (!MONGODB_URI) {
+  throw new Error("❌ Please define the MONGODB_URI in .env.local");
+}
 
 /**
- * Global is used here to maintain a cached connection across hot reloads
- * in development. This prevents connections growing exponentially
- * during API Route usage.
+ * Use a cached connection across hot reloads in development
  */
-let cached = global.mongoose;
+let cached = (global as any).mongoose;
 
 if (!cached) {
-  cached = global.mongoose = { conn: null, promise: null };
+  cached = (global as any).mongoose = { conn: null, promise: null };
 }
 
 async function connectDB() {
-  if (cached.conn) {
-    return cached.conn;
-  }
+  if (cached.conn) return cached.conn;
 
   if (!cached.promise) {
     const opts = {
@@ -24,6 +24,7 @@ async function connectDB() {
     };
 
     cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+      console.log("✅ Connected to MongoDB Atlas");
       return mongoose;
     });
   }
@@ -32,6 +33,7 @@ async function connectDB() {
     cached.conn = await cached.promise;
   } catch (e) {
     cached.promise = null;
+    console.error("❌ MongoDB connection error:", e);
     throw e;
   }
 

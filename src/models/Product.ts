@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Document, Model } from "mongoose";
 
 export interface IProduct extends Document {
   title: string;
@@ -17,49 +17,63 @@ export interface IProduct extends Document {
   updatedAt: Date;
 }
 
-const ProductSchema: Schema = new Schema({
-  title: {
-    type: String,
-    required: [true, 'Product title is required'],
-    trim: true,
+const ProductSchema = new Schema<IProduct>(
+  {
+    title: {
+      type: String,
+      required: [true, "Product title is required"],
+      trim: true,
+    },
+    reviews: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    price: {
+      type: Number,
+      required: [true, "Product price is required"],
+      min: 0,
+    },
+    discountedPrice: {
+      type: Number,
+      required: [true, "Discounted price is required"],
+      min: 0,
+    },
+    description: {
+      type: String,
+      trim: true,
+    },
+    category: {
+      type: String,
+      trim: true,
+    },
+    brand: {
+      type: String,
+      trim: true,
+    },
+    inStock: {
+      type: Boolean,
+      default: true,
+    },
+    imgs: {
+      thumbnails: {
+        type: [String],
+        default: [],
+      },
+      previews: {
+        type: [String],
+        default: [],
+      },
+    },
   },
-  reviews: {
-    type: Number,
-    default: 0,
-    min: 0,
-  },
-  price: {
-    type: Number,
-    required: [true, 'Product price is required'],
-    min: 0,
-  },
-  discountedPrice: {
-    type: Number,
-    required: [true, 'Discounted price is required'],
-    min: 0,
-  },
-  description: {
-    type: String,
-    trim: true,
-  },
-  category: {
-    type: String,
-    trim: true,
-  },
-  brand: {
-    type: String,
-    trim: true,
-  },
-  inStock: {
-    type: Boolean,
-    default: true,
-  },
-  imgs: {
-    thumbnails: [String],
-    previews: [String],
-  },
-}, {
-  timestamps: true,
-});
+  {
+    timestamps: true,
+  }
+);
 
-export default mongoose.models.Product || mongoose.model<IProduct>('Product', ProductSchema);
+// ✅ Prevent recompiling model during hot reloads in Next.js
+const Product: Model<IProduct> =
+  mongoose.models.Product ||
+  mongoose.model<IProduct>("Product", ProductSchema);
+
+export default Product;
