@@ -19,8 +19,8 @@ export const useCategories = () => {
         setLoading(true);
         setError(null);
 
-        const response = await fetch('/api/categories');
-        const data: CategoriesResponse = await response.json();
+        const response = await fetch('/api/categories', { cache: 'no-store', next: { revalidate: 0 } });
+        const data: CategoriesResponse = await response.clone().json();
 
         const hashId = (s: string) => {
           let h = 0;
