@@ -1,0 +1,300 @@
+"use client";
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+
+const AdminPage = () => {
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState('products');
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-6xl mx-auto px-4">
+        <h1 className="text-3xl font-bold text-gray-900 mb-8">Admin Dashboard</h1>
+        
+        {/* Tabs */}
+        <div className="border-b border-gray-200 mb-8">
+          <nav className="-mb-px flex space-x-8">
+            <button
+              onClick={() => setActiveTab('products')}
+              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'products'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              Products
+            </button>
+            <button
+              onClick={() => setActiveTab('categories')}
+              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'categories'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              Categories
+            </button>
+          </nav>
+        </div>
+
+        {/* Content */}
+        {activeTab === 'products' && <ProductManagement />}
+        {activeTab === 'categories' && <CategoryManagement />}
+      </div>
+    </div>
+  );
+};
+
+const ProductManagement = () => {
+  const [formData, setFormData] = useState({
+    title: '',
+    price: '',
+    discountedPrice: '',
+    reviews: '0',
+    description: '',
+    category: '',
+    brand: '',
+    inStock: true,
+    thumbnails: ['', ''],
+    previews: ['', ''],
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const response = await fetch('/api/products', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formData,
+          price: parseFloat(formData.price),
+          discountedPrice: parseFloat(formData.discountedPrice),
+          reviews: parseInt(formData.reviews),
+        }),
+      });
+
+      if (response.ok) {
+        alert('Product added successfully!');
+        setFormData({
+          title: '',
+          price: '',
+          discountedPrice: '',
+          reviews: '0',
+          description: '',
+          category: '',
+          brand: '',
+          inStock: true,
+          thumbnails: ['', ''],
+          previews: ['', ''],
+        });
+      } else {
+        alert('Error adding product');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Error adding product');
+    }
+  };
+
+  return (
+    <div className="bg-white shadow rounded-lg p-6">
+      <h2 className="text-xl font-semibold mb-4">Add New Product</h2>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Title</label>
+            <input
+              type="text"
+              required
+              value={formData.title}
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Price</label>
+            <input
+              type="number"
+              step="0.01"
+              required
+              value={formData.price}
+              onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Discounted Price</label>
+            <input
+              type="number"
+              step="0.01"
+              required
+              value={formData.discountedPrice}
+              onChange={(e) => setFormData({ ...formData, discountedPrice: e.target.value })}
+              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Reviews Count</label>
+            <input
+              type="number"
+              value={formData.reviews}
+              onChange={(e) => setFormData({ ...formData, reviews: e.target.value })}
+              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Category</label>
+            <input
+              type="text"
+              value={formData.category}
+              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Brand</label>
+            <input
+              type="text"
+              value={formData.brand}
+              onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
+              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Description</label>
+          <textarea
+            value={formData.description}
+            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+            rows={3}
+            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Thumbnail Images (comma-separated URLs)</label>
+            <input
+              type="text"
+              value={formData.thumbnails.join(', ')}
+              onChange={(e) => setFormData({ ...formData, thumbnails: e.target.value.split(', ') })}
+              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Preview Images (comma-separated URLs)</label>
+            <input
+              type="text"
+              value={formData.previews.join(', ')}
+              onChange={(e) => setFormData({ ...formData, previews: e.target.value.split(', ') })}
+              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+        </div>
+
+        <div className="flex items-center">
+          <input
+            type="checkbox"
+            checked={formData.inStock}
+            onChange={(e) => setFormData({ ...formData, inStock: e.target.checked })}
+            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+          />
+          <label className="ml-2 block text-sm text-gray-900">In Stock</label>
+        </div>
+
+        <button
+          type="submit"
+          className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          Add Product
+        </button>
+      </form>
+    </div>
+  );
+};
+
+const CategoryManagement = () => {
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    img: '',
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const response = await fetch('/api/categories', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        alert('Category added successfully!');
+        setFormData({
+          title: '',
+          description: '',
+          img: '',
+        });
+      } else {
+        alert('Error adding category');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Error adding category');
+    }
+  };
+
+  return (
+    <div className="bg-white shadow rounded-lg p-6">
+      <h2 className="text-xl font-semibold mb-4">Add New Category</h2>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Title</label>
+          <input
+            type="text"
+            required
+            value={formData.title}
+            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Description</label>
+          <textarea
+            value={formData.description}
+            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+            rows={3}
+            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Image URL</label>
+          <input
+            type="url"
+            required
+            value={formData.img}
+            onChange={(e) => setFormData({ ...formData, img: e.target.value })}
+            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+
+        <button
+          type="submit"
+          className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          Add Category
+        </button>
+      </form>
+    </div>
+  );
+};
+
+export default AdminPage;
