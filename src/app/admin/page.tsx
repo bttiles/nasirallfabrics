@@ -306,6 +306,91 @@ const ProductManagement = () => {
           </div>
         )}
       </div>
+
+      {editingProduct && (
+        <div className="bg-white shadow rounded-lg p-6">
+          <h3 className="text-lg font-semibold mb-4">Edit Product</h3>
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              const res = await fetch(`/api/products/${editingProduct._id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  title: editingProduct.title,
+                  price: editingProduct.price,
+                  discountedPrice: editingProduct.discountedPrice,
+                  imgs: editingProduct.imgs || { thumbnails: [], previews: [] },
+                }),
+              });
+              if (res.ok) {
+                await loadProducts();
+                setEditingProduct(null);
+                alert('Product updated');
+              } else {
+                alert('Failed to update');
+              }
+            }}
+            className="space-y-4"
+          >
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Title</label>
+                <input
+                  type="text"
+                  value={editingProduct.title}
+                  onChange={(e) => setEditingProduct({ ...editingProduct, title: e.target.value })}
+                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Price</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={editingProduct.price}
+                  onChange={(e) => setEditingProduct({ ...editingProduct, price: parseFloat(e.target.value) })}
+                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Discounted</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={editingProduct.discountedPrice}
+                  onChange={(e) => setEditingProduct({ ...editingProduct, discountedPrice: parseFloat(e.target.value) })}
+                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Thumbnails (comma-separated)</label>
+                <input
+                  type="text"
+                  value={(editingProduct.imgs?.thumbnails || []).join(', ')}
+                  onChange={(e) => setEditingProduct({ ...editingProduct, imgs: { ...editingProduct.imgs, thumbnails: e.target.value.split(', ').filter(Boolean), previews: editingProduct.imgs?.previews || [] } })}
+                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Previews (comma-separated)</label>
+                <input
+                  type="text"
+                  value={(editingProduct.imgs?.previews || []).join(', ')}
+                  onChange={(e) => setEditingProduct({ ...editingProduct, imgs: { ...editingProduct.imgs, thumbnails: editingProduct.imgs?.thumbnails || [], previews: e.target.value.split(', ').filter(Boolean) } })}
+                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <button type="submit" className="bg-blue-600 text-white py-2 px-4 rounded-md">Save</button>
+              <button type="button" onClick={() => setEditingProduct(null)} className="py-2 px-4 rounded-md border">Cancel</button>
+            </div>
+          </form>
+        </div>
+      )}
     </div>
   );
 };
