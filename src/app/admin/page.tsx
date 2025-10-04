@@ -368,48 +368,88 @@ const CategoryManagement = () => {
   };
 
   return (
-    <div className="bg-white shadow rounded-lg p-6">
-      <h2 className="text-xl font-semibold mb-4">Add New Category</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Title</label>
-          <input
-            type="text"
-            required
-            value={formData.title}
-            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-          />
-        </div>
-        
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Description</label>
-          <textarea
-            value={formData.description}
-            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-            rows={3}
-            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-          />
-        </div>
+    <div className="bg-white shadow rounded-lg p-6 space-y-8">
+      <div>
+        <h2 className="text-xl font-semibold mb-4">Add New Category</h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Title</label>
+            <input
+              type="text"
+              required
+              value={formData.title}
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Image URL</label>
-          <input
-            type="url"
-            required
-            value={formData.img}
-            onChange={(e) => setFormData({ ...formData, img: e.target.value })}
-            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-          />
-        </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Description</label>
+            <textarea
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              rows={3}
+              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
 
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          Add Category
-        </button>
-      </form>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Image URL</label>
+            <input
+              type="url"
+              required
+              value={formData.img}
+              onChange={(e) => setFormData({ ...formData, img: e.target.value })}
+              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            Add Category
+          </button>
+        </form>
+      </div>
+
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-lg font-semibold">Categories</h3>
+          <button onClick={loadCategories} className="text-sm text-blue-600 hover:underline">Refresh</button>
+        </div>
+        {loading ? (
+          <p>Loading...</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-left text-sm">
+              <thead>
+                <tr className="border-b">
+                  <th className="py-2 pr-4">Title</th>
+                  <th className="py-2 pr-4">Image</th>
+                  <th className="py-2 pr-4">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {categories.map((c) => (
+                  <tr key={c._id} className="border-b">
+                    <td className="py-2 pr-4">{c.title}</td>
+                    <td className="py-2 pr-4 truncate max-w-[240px]">{c.img}</td>
+                    <td className="py-2 pr-4">
+                      <button
+                        onClick={() => handleDelete(c._id)}
+                        className="text-red-600 hover:underline"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
