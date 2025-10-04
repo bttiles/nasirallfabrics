@@ -304,11 +304,30 @@ const ProductManagement = () => {
 };
 
 const CategoryManagement = () => {
+  type CategoryDoc = { _id: string; title: string; img: string; description?: string };
+
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     img: '',
   });
+  const [categories, setCategories] = useState<CategoryDoc[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const loadCategories = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch('/api/categories');
+      const data = await res.json();
+      if (data.success) setCategories(data.data);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadCategories();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -322,18 +341,29 @@ const CategoryManagement = () => {
       });
 
       if (response.ok) {
-        alert('Category added successfully!');
         setFormData({
           title: '',
           description: '',
           img: '',
         });
+        await loadCategories();
+        alert('Category added successfully!');
       } else {
         alert('Error adding category');
       }
     } catch (error) {
       console.error('Error:', error);
       alert('Error adding category');
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Delete this category?')) return;
+    const res = await fetch(`/api/categories/${id}`, { method: 'DELETE' });
+    if (res.ok) {
+      setCategories((prev) => prev.filter((c) => c._id !== id));
+    } else {
+      alert('Failed to delete');
     }
   };
 
