@@ -106,6 +106,9 @@ export const useProduct = (id: string) => {
 
         if (data.success) {
           const p = data.data;
+          const thumbs = Array.isArray(p.imgs?.thumbnails) ? p.imgs.thumbnails : [];
+          const prevs = Array.isArray(p.imgs?.previews) ? p.imgs.previews : [];
+          const fallback = '/images/products/product-1-bg-1.png';
           const mapped = {
             id: p._id ? hashId(String(p._id)) : hashId(p.title + String(p.price)),
             title: p.title,
@@ -113,8 +116,8 @@ export const useProduct = (id: string) => {
             price: p.price,
             discountedPrice: p.discountedPrice,
             imgs: {
-              thumbnails: p.imgs?.thumbnails || [],
-              previews: p.imgs?.previews || [],
+              thumbnails: thumbs.length ? thumbs : [fallback],
+              previews: prevs.length ? prevs : [fallback],
             },
           } as any;
           setProduct(mapped);
