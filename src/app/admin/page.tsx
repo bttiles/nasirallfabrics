@@ -285,7 +285,13 @@ const ProductManagement = () => {
                     <td className="py-2 pr-4">{p.title}</td>
                     <td className="py-2 pr-4">${p.price}</td>
                     <td className="py-2 pr-4">${p.discountedPrice}</td>
-                    <td className="py-2 pr-4">
+                    <td className="py-2 pr-4 space-x-4">
+                      <button
+                        onClick={() => setEditingProduct(p)}
+                        className="text-blue-600 hover:underline"
+                      >
+                        Edit
+                      </button>
                       <button
                         onClick={() => handleDelete(p._id)}
                         className="text-red-600 hover:underline"
