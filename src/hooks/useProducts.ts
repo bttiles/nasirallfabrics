@@ -47,17 +47,22 @@ export const useProducts = (options: UseProductsOptions = {}) => {
         };
 
         if (data.success) {
-          const mapped = (data.data as any[]).map((p) => ({
-            id: p._id ? hashId(String(p._id)) : hashId(p.title + String(p.price)),
-            title: p.title,
-            reviews: typeof p.reviews === 'number' ? p.reviews : 0,
-            price: p.price,
-            discountedPrice: p.discountedPrice,
-            imgs: {
-              thumbnails: p.imgs?.thumbnails || [],
-              previews: p.imgs?.previews || [],
-            },
-          }));
+          const mapped = (data.data as any[]).map((p) => {
+            const thumbs = Array.isArray(p.imgs?.thumbnails) ? p.imgs.thumbnails : [];
+            const prevs = Array.isArray(p.imgs?.previews) ? p.imgs.previews : [];
+            const fallback = '/images/products/product-1-bg-1.png';
+            return {
+              id: p._id ? hashId(String(p._id)) : hashId(p.title + String(p.price)),
+              title: p.title,
+              reviews: typeof p.reviews === 'number' ? p.reviews : 0,
+              price: p.price,
+              discountedPrice: p.discountedPrice,
+              imgs: {
+                thumbnails: thumbs.length ? thumbs : [fallback],
+                previews: prevs.length ? prevs : [fallback],
+              },
+            };
+          });
           setProducts(mapped as any);
           setPagination(data.pagination || null);
         } else {
