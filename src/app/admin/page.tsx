@@ -69,6 +69,7 @@ const ProductManagement = () => {
   });
   const [products, setProducts] = useState<ProductDoc[]>([]);
   const [loading, setLoading] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<ProductDoc | null>(null);
 
   const loadProducts = async () => {
     try {
