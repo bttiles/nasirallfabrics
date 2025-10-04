@@ -40,8 +40,25 @@ export const useProducts = (options: UseProductsOptions = {}) => {
         const response = await fetch(`/api/products?${params.toString()}`);
         const data: ProductsResponse = await response.json();
 
+        const hashId = (s: string) => {
+          let h = 0;
+          for (let i = 0; i < s.length; i++) h = (h << 5) - h + s.charCodeAt(i);
+          return Math.abs(h);
+        };
+
         if (data.success) {
-          setProducts(data.data);
+          const mapped = (data.data as any[]).map((p) => ({
+            id: p._id ? hashId(String(p._id)) : hashId(p.title + String(p.price)),
+            title: p.title,
+            reviews: typeof p.reviews === 'number' ? p.reviews : 0,
+            price: p.price,
+            discountedPrice: p.discountedPrice,
+            imgs: {
+              thumbnails: p.imgs?.thumbnails || [],
+              previews: p.imgs?.previews || [],
+            },
+          }));
+          setProducts(mapped as any);
           setPagination(data.pagination || null);
         } else {
           setError(data.error || 'Failed to fetch products');
