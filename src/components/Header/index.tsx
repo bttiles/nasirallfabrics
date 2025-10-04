@@ -62,13 +62,14 @@ const Header = () => {
         >
           {/* <!-- header top left --> */}
           <div className="xl:w-auto flex-col sm:flex-row w-full flex sm:justify-between sm:items-center gap-5 sm:gap-10">
-            <Link className="flex-shrink-0" href="/">
-              <Image
+            <Link className="flex-shrink-0 text-2xl font-bold text-blue-dark " href="/">
+              {/* <Image
                 src="/images/logo/logo.svg"
                 alt="Logo"
                 width={219}
                 height={36}
-              />
+              /> */}
+              Nasir All Fabrics
             </Link>
 
             <div className="max-w-[475px] w-full">
@@ -148,10 +149,10 @@ const Header = () => {
                   24/7 SUPPORT
                 </span>
                 <p className="font-medium text-custom-sm text-dark">
-                  (+965) 7492-3477
+                  (+92) 3702539707
                 </p>
               </div>
-            </div>
+            </div>  
 
             {/* <!-- divider --> */}
             <span className="hidden xl:block w-px h-7.5 bg-gray-4"></span>

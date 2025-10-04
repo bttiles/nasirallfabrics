@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
     
     let query = {};
     if (category) {
-      query = { category: category };
+      query = { categoryId: category };
     }
     
     const limitNum = limit ? parseInt(limit) : 10;

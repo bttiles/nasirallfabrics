@@ -3,9 +3,10 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 export interface ICategory extends Document {
   title: string;
   description?: string;
-  img: string;
+  img?: string;
   isActive: boolean;
   productCount?: number;
+  collectionId: mongoose.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -16,7 +17,6 @@ const CategorySchema = new Schema<ICategory>(
       type: String,
       required: [true, "Category title is required"],
       trim: true,
-      unique: true,
     },
     description: {
       type: String,
@@ -24,7 +24,6 @@ const CategorySchema = new Schema<ICategory>(
     },
     img: {
       type: String,
-      required: [true, "Category image is required"],
     },
     isActive: {
       type: Boolean,
@@ -33,15 +32,16 @@ const CategorySchema = new Schema<ICategory>(
     productCount: {
       type: Number,
       default: 0,
-      min: 0,
+    },
+    collectionId: {
+      type: Schema.Types.ObjectId,
+      ref: "Collection",
+      required: [true, "Collection reference is required"],
     },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
-// ✅ Important: explicitly define the model type
 const Category: Model<ICategory> =
   mongoose.models.Category ||
   mongoose.model<ICategory>("Category", CategorySchema);

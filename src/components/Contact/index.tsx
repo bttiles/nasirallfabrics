@@ -33,7 +33,7 @@ const Contact = () => {
                         fill="#3C50E0"
                       />
                     </svg>
-                    Name: James Septimus
+                    Name: Nasir All Fabrics
                   </p>
 
                   <p className="flex items-center gap-4">
@@ -61,7 +61,7 @@ const Contact = () => {
                         fill="#3C50E0"
                       />
                     </svg>
-                    Phone: 1234 567890
+                    Phone: 03702539707
                   </p>
 
                   <p className="flex gap-4">
@@ -80,8 +80,9 @@ const Contact = () => {
                         fill="#3C50E0"
                       />
                     </svg>
-                    Address: 7398 Smoke Ranch RoadLas Vegas, Nevada 89128
+                    Address: Clifton Do Talwar The Plaza Shopping Mall Shop no 82,84, Karachi, Pakistan 75600
                   </p>
+
                 </div>
               </div>
             </div>
@@ -170,7 +171,25 @@ const Contact = () => {
                 </button>
               </form>
             </div>
+            
           </div>
+          {/* Google Map Section */}
+<div className="mt-10">
+  <h3 className="text-2xl font-semibold text-gray-800 mb-4 text-center">
+    Find Us on Google Maps
+  </h3>
+  <div className="w-full h-[400px] rounded-2xl overflow-hidden shadow-lg border border-gray-200">
+    <iframe
+      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3621.2218150045123!2d67.03492299999999!3d24.8220869!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3eb33d001a4b3019%3A0xc714fd67e8b2eecc!2sNASIR%20ALL%20FABRICS!5e0!3m2!1sen!2s!4v1759594502154!5m2!1sen!2s"
+      width="100%"
+      height="100%"
+      style={{ border: 0 }}
+      loading="lazy"
+      referrerPolicy="no-referrer-when-downgrade"
+    ></iframe>
+  </div>
+</div>
+
         </div>
       </section>
     </>

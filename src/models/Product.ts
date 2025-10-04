@@ -2,17 +2,17 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 
 export interface IProduct extends Document {
   title: string;
-  reviews: number;
   price: number;
   discountedPrice: number;
   description?: string;
-  category?: string;
+  categoryId: mongoose.Types.ObjectId;
   brand?: string;
   inStock?: boolean;
   imgs: {
     thumbnails: string[];
     previews: string[];
   };
+  reviews?: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -24,54 +24,39 @@ const ProductSchema = new Schema<IProduct>(
       required: [true, "Product title is required"],
       trim: true,
     },
-    reviews: {
-      type: Number,
-      default: 0,
-      min: 0,
-    },
     price: {
       type: Number,
-      required: [true, "Product price is required"],
+      required: true,
       min: 0,
     },
     discountedPrice: {
       type: Number,
-      required: [true, "Discounted price is required"],
+      required: true,
       min: 0,
     },
-    description: {
-      type: String,
-      trim: true,
-    },
-    category: {
-      type: String,
-      trim: true,
-    },
-    brand: {
-      type: String,
-      trim: true,
-    },
+    description: String,
+    brand: String,
     inStock: {
       type: Boolean,
       default: true,
     },
+    reviews: {
+      type: Number,
+      default: 0,
+    },
     imgs: {
-      thumbnails: {
-        type: [String],
-        default: [],
-      },
-      previews: {
-        type: [String],
-        default: [],
-      },
+      thumbnails: { type: [String], default: [] },
+      previews: { type: [String], default: [] },
+    },
+    categoryId: {
+      type: Schema.Types.ObjectId,
+      ref: "Category",
+      required: [true, "Category reference is required"],
     },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
-// ✅ Prevent recompiling model during hot reloads in Next.js
 const Product: Model<IProduct> =
   mongoose.models.Product ||
   mongoose.model<IProduct>("Product", ProductSchema);
